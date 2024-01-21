@@ -8,18 +8,7 @@ Options:
   --year=<year>               Year to download from
   --start_year=<start_year>   Year to start
   --end_year=<end_year>       Year to end
-  --interval=<interval>       Interval to download
-
-
-   Interval info:
-   supported intervals: 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo
-   90m - 60 days
-   60m, 1h - 730 days
-   30m - 60 days
-   15m - 60 days
-   5m - 60 days
-   2m - 60 days
-   1m - 7 days
+  --interval=<interval>       Interval to download, supported intervals: 1m, 2m, 5m, 15m, 30m, 60m, 90m
 """
 
 import logging
@@ -29,7 +18,7 @@ from docopt import docopt
 from datetime import datetime, timedelta
 
 
-def main(symbol, start_year, end_year):
+def year_download(symbol, start_year, end_year):
     start_date = f'{start_year}-01-01'
     end_date = f'{end_year}-12-31'
 
@@ -44,7 +33,8 @@ def main(symbol, start_year, end_year):
     # writing to csv file
     write_to_csv(data, filename)
 
-def interval_downlaod(symbol, interval):
+
+def interval_download(symbol, interval):
     """ To download a specific interval. This will download the max amount that it can for the specified interval """
     end_date = datetime.today().strftime('%Y-%m-%d')
 
@@ -89,6 +79,6 @@ if __name__ == '__main__':
         end_year = year
 
     if interval is not None:
-        interval_downlaod(symbol, interval)
+        interval_download(symbol, interval)
     else:
-        main(symbol, start_year, end_year)
+        year_download(symbol, start_year, end_year)
