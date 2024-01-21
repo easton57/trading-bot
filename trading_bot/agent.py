@@ -178,7 +178,7 @@ class Agent:
         return loss
 
     def save(self, episode):
-        self.model.save("models/{}_{}".format(self.model_name, episode))
+        self.model.save(f"models/{self.model_name}_{episode}")
 
     def load(self):
         return load_model("models/" + self.model_name, custom_objects=self.custom_objects)
