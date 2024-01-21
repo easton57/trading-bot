@@ -57,7 +57,7 @@ def train_model(agent, episode, data, ep_count=100, batch_size=32, window_size=1
     if episode % 10 == 0:
         agent.save(episode)
 
-    return (episode, ep_count, total_profit, np.mean(np.array(avg_loss)))
+    return episode, ep_count, total_profit, np.mean(np.array(avg_loss))
 
 
 def evaluate_model(agent, data, window_size, debug):
