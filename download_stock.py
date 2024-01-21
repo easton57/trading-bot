@@ -33,9 +33,9 @@ def year_download(symbol, start_year, end_year):
 
     # name of csv file
     if start_year == end_year:
-        filename = f"{symbol}_{start_year}.csv"
+        filename = f"{symbol}_{start_year}_1d.csv"
     else:
-        filename = f"{symbol}_{start_year}-{end_year}.csv"
+        filename = f"{symbol}_{start_year}-{end_year}_1d.csv"
 
     # writing to csv file
     write_to_csv(data, filename)
