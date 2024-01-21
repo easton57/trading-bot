@@ -2,7 +2,9 @@
 Script for downloading stock data
 
 Usage:
-  download_stock.py <stock-symbol> [--year=<year>] [--start_year=<start_year>] [--end_year=<end_year>] [--interval=<interval>]
+  download_stock.py <stock-symbol> [--year=<year>]
+    [--start_year=<start_year>] [--end_year=<end_year>]
+    [--interval=<interval>]
 
 Options:
   --year=<year>               Year to download from
