@@ -23,6 +23,7 @@ def send_training_notification(recipient, ticker):
                f"Training has completed for {ticker}!"
                f"\n\n"
                f"Thanks,"
+               f"\n"
                f"Market Saver RL")
 
     # Plug text into email
@@ -52,6 +53,7 @@ def send_error_notification(recipient, ticker, error):
                f"Review logs and try again."
                f"\n\n"
                f"Thanks,"
+               f"\n"
                f"Market Saver RL")
 
     # Plug text into email
