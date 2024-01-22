@@ -5,6 +5,7 @@ Usage:
   train.py <train-stock> [--val-stock=<val-stock>] [--strategy=<strategy>]
     [--window-size=<window-size>] [--batch-size=<batch-size>]
     [--episode-count=<episode-count>] [--model-name=<model-name>]
+    [--recipient=<recipient>]
     [--pretrained] [--debug]
 
 Options:
@@ -23,12 +24,14 @@ Options:
   --model-name=<model-name>         Name of the pretrained model to use. [default: model_debug]
   --pretrained                      Specifies whether to continue training a previously
                                     trained model (reads `model-name`).
+  --recipient=<recipient>           Recipient for email notifications on training
   --debug                           Specifies whether to use verbose logs during eval operation.
 """
 
 import logging
 import coloredlogs
 import numpy as np
+import notification as nf
 
 from docopt import docopt
 
@@ -58,16 +61,22 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count,
 
     initial_offset = val_data[1] - val_data[0]
 
-    for episode in range(1, ep_count + 1):
-        train_result = train_model(agent, episode, train_data, ep_count=ep_count,
-                                   batch_size=batch_size, window_size=window_size)
-        val_result, _ = evaluate_model(agent, val_data, window_size, debug)
-        show_train_result(train_result, val_result, initial_offset)
+    try:
+        for episode in range(1, ep_count + 1):
+            train_result = train_model(agent, episode, train_data, ep_count=ep_count,
+                                       batch_size=batch_size, window_size=window_size)
+            val_result, _ = evaluate_model(agent, val_data, window_size, debug)
+            show_train_result(train_result, val_result, initial_offset)
+
+        # Send success email
+        nf.send_training_notification(recipient, model_name)
+    except:
+        nf.send_error_notification(recipient, model_name)
 
 
 def single_data(stock_data, window_size, batch_size, ep_count,
          strategy="t-dqn", model_name="model_debug", pretrained=False,
-         debug=False):
+         debug=False, recipient='null@null.com'):
     """ Trains the stock trading bot using Deep Q-Learning.
     This method uses a single CSV and separates it 80/20 for training and validation
     Please see https://arxiv.org/abs/1312.5602 for more details.
@@ -87,11 +96,17 @@ def single_data(stock_data, window_size, batch_size, ep_count,
     # Calculate offset
     initial_offset = val_data[1] - val_data[0]
 
-    for episode in range(1, ep_count + 1):
-        train_result = train_model(agent, episode, train_data, ep_count=ep_count,
-                                   batch_size=batch_size, window_size=window_size)
-        val_result, _ = evaluate_model(agent, val_data, window_size, debug)
-        show_train_result(train_result, val_result, initial_offset)
+    try:
+        for episode in range(1, ep_count + 1):
+            train_result = train_model(agent, episode, train_data, ep_count=ep_count,
+                                       batch_size=batch_size, window_size=window_size)
+            val_result, _ = evaluate_model(agent, val_data, window_size, debug)
+            show_train_result(train_result, val_result, initial_offset)
+
+        # Send success email
+        nf.send_training_notification(recipient, model_name)
+    except:
+        nf.send_error_notification(recipient, model_name)
 
 
 if __name__ == "__main__":
@@ -106,6 +121,7 @@ if __name__ == "__main__":
     model_name = args["--model-name"]
     pretrained = args["--pretrained"]
     debug = args["--debug"]
+    recipient = args["--recipient"]
 
     coloredlogs.install(level="DEBUG")
     switch_k_backend_device()
