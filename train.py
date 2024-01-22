@@ -132,4 +132,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Aborted!")
     except Exception as e:
+        print(e)
         nf.send_error_notification(recipient, model_name, e)
