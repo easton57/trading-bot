@@ -129,8 +129,8 @@ if __name__ == "__main__":
     try:
         if val_stock is None:
             single_data(train_stock, window_size, batch_size,
-                 ep_count, strategy=strategy, model_name=model_name,
-                 pretrained=pretrained, debug=debug)
+                        ep_count, strategy=strategy, model_name=model_name,
+                        pretrained=pretrained, debug=debug)
         else:
             main(train_stock, val_stock, window_size, batch_size,
                  ep_count, strategy=strategy, model_name=model_name,
