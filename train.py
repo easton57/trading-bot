@@ -2,12 +2,15 @@
 Script for training Stock Trading Bot.
 
 Usage:
-  train.py <train-stock> <val-stock> [--strategy=<strategy>]
+  train.py <train-stock> [--val-stock=<val-stock>] [--strategy=<strategy>]
     [--window-size=<window-size>] [--batch-size=<batch-size>]
     [--episode-count=<episode-count>] [--model-name=<model-name>]
     [--pretrained] [--debug]
 
 Options:
+  --val-stock=<val-stock>           Used to be proprietary. Can be used to send validation data to the script.
+                                    For ease of use, send in all data through <train-stock> and it will be separated
+                                    for you for training.
   --strategy=<strategy>             Q-learning strategy to use for training the network. Options:
                                       `dqn` i.e. Vanilla DQN,
                                       `t-dqn` i.e. DQN with fixed target distribution,
@@ -25,6 +28,7 @@ Options:
 
 import logging
 import coloredlogs
+import numpy as np
 
 from docopt import docopt
 
@@ -61,11 +65,40 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count,
         show_train_result(train_result, val_result, initial_offset)
 
 
+def single_data(stock_data, window_size, batch_size, ep_count,
+         strategy="t-dqn", model_name="model_debug", pretrained=False,
+         debug=False):
+    """ Trains the stock trading bot using Deep Q-Learning.
+    This method uses a single CSV and separates it 80/20 for training and validation
+    Please see https://arxiv.org/abs/1312.5602 for more details.
+
+    Args: [python train.py --help]
+    """
+    agent = Agent(window_size, strategy=strategy, pretrained=pretrained, model_name=model_name)
+
+    # Separate the data passed
+    all_data = get_stock_data(stock_data)
+    train_data, val_data = np.split(all_data, [int(0.8*len(all_data))])
+
+    # convert back to list
+    train_data = train_data.tolist()
+    val_data = val_data.tolist()
+
+    # Calculate offset
+    initial_offset = val_data[1] - val_data[0]
+
+    for episode in range(1, ep_count + 1):
+        train_result = train_model(agent, episode, train_data, ep_count=ep_count,
+                                   batch_size=batch_size, window_size=window_size)
+        val_result, _ = evaluate_model(agent, val_data, window_size, debug)
+        show_train_result(train_result, val_result, initial_offset)
+
+
 if __name__ == "__main__":
     args = docopt(__doc__)
 
     train_stock = args["<train-stock>"]
-    val_stock = args["<val-stock>"]
+    val_stock = args["--val-stock"]
     strategy = args["--strategy"]
     window_size = int(args["--window-size"])
     batch_size = int(args["--batch-size"])
@@ -78,8 +111,13 @@ if __name__ == "__main__":
     switch_k_backend_device()
 
     try:
-        main(train_stock, val_stock, window_size, batch_size,
-             ep_count, strategy=strategy, model_name=model_name, 
-             pretrained=pretrained, debug=debug)
+        if val_stock is None:
+            single_data(train_stock, window_size, batch_size,
+                 ep_count, strategy=strategy, model_name=model_name,
+                 pretrained=pretrained, debug=debug)
+        else:
+            main(train_stock, val_stock, window_size, batch_size,
+                 ep_count, strategy=strategy, model_name=model_name,
+                 pretrained=pretrained, debug=debug)
     except KeyboardInterrupt:
         print("Aborted!")
