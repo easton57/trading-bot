@@ -44,7 +44,7 @@ def show_eval_result(model_name, profit, initial_offset):
 
 def write_to_file(step, text):
     with open('results.txt', 'a') as file:
-        file.write(f"{step}: {text}")
+        file.write(f"{step}: {text}\n")
 
 
 def get_stock_data(stock_file):
