@@ -48,12 +48,15 @@ def interval_download(symbol, interval, start_date=None, end_date=None):
 
         if interval == '1m':
             # Has to be the last 7 days
+            day = 7
             start_date = (datetime.today() - timedelta(days=6)).strftime('%Y-%m-%d')
         elif interval in ['2m', '5m', '15m', '30m', '90m']:
             # These are the last 60 days
+            day = 60
             start_date = (datetime.today() - timedelta(days=59)).strftime('%Y-%m-%d')
         elif interval in ['60m', '1h']:
             # These have a phat delta of 730 days
+            day = 730
             start_date = (datetime.today() - timedelta(days=729)).strftime('%Y-%m-%d')
         else:
             logging.error("Interval invalid! Please refer to help for appropriate interval times")
@@ -64,7 +67,7 @@ def interval_download(symbol, interval, start_date=None, end_date=None):
 
     # Create our filename
     if start_date is None:
-        filename = f'{symbol}_{end_date}_{interval}.csv'
+        filename = f'{symbol}_{day}day_{end_date}_{interval}.csv'
     else:
         filename = f'{symbol}_{start_date}-{end_date}_{interval}.csv'
 
