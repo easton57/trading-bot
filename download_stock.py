@@ -106,7 +106,7 @@ if __name__ == '__main__':
         start_year = year
         end_year = year
 
-    if today is not None:
+    if today:
         today_download(symbol, interval)
     elif interval is not None and (start_date is None or end_date is None):
         interval_download(symbol, interval)
