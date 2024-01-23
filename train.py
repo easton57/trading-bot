@@ -61,17 +61,14 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count,
 
     initial_offset = val_data[1] - val_data[0]
 
-    try:
-        for episode in range(1, ep_count + 1):
-            train_result = train_model(agent, episode, train_data, ep_count=ep_count,
-                                       batch_size=batch_size, window_size=window_size)
-            val_result, _ = evaluate_model(agent, val_data, window_size, debug)
-            show_train_result(train_result, val_result, initial_offset)
+    for episode in range(1, ep_count + 1):
+        train_result = train_model(agent, episode, train_data, ep_count=ep_count,
+                                   batch_size=batch_size, window_size=window_size)
+        val_result, _ = evaluate_model(agent, val_data, window_size, debug)
+        show_train_result(train_result, val_result, initial_offset)
 
-        # Send success email
-        nf.send_training_notification(recipient, model_name)
-    except:
-        nf.send_error_notification(recipient, model_name)
+    # Send success email
+    nf.send_training_notification(recipient, model_name)
 
 
 def single_data(stock_data, window_size, batch_size, ep_count,
@@ -96,17 +93,14 @@ def single_data(stock_data, window_size, batch_size, ep_count,
     # Calculate offset
     initial_offset = val_data[1] - val_data[0]
 
-    try:
-        for episode in range(1, ep_count + 1):
-            train_result = train_model(agent, episode, train_data, ep_count=ep_count,
-                                       batch_size=batch_size, window_size=window_size)
-            val_result, _ = evaluate_model(agent, val_data, window_size, debug)
-            show_train_result(train_result, val_result, initial_offset)
+    for episode in range(1, ep_count + 1):
+        train_result = train_model(agent, episode, train_data, ep_count=ep_count,
+                                   batch_size=batch_size, window_size=window_size)
+        val_result, _ = evaluate_model(agent, val_data, window_size, debug)
+        show_train_result(train_result, val_result, initial_offset)
 
-        # Send success email
-        nf.send_training_notification(recipient, model_name)
-    except:
-        nf.send_error_notification(recipient, model_name)
+    # Send success email
+    nf.send_training_notification(recipient, model_name)
 
 
 if __name__ == "__main__":
@@ -137,3 +131,6 @@ if __name__ == "__main__":
                  pretrained=pretrained, debug=debug)
     except KeyboardInterrupt:
         print("Aborted!")
+    except Exception as e:
+        print(e)
+        nf.send_error_notification(recipient, model_name, e)

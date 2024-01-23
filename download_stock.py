@@ -5,7 +5,7 @@ Usage:
   download_stock.py <stock-symbol> [--year=<year>]
     [--start_year=<start_year>] [--end_year=<end_year>]
     [--interval=<interval>] [--start_date=<start_date>]
-    [--end_date=<end_date>]
+    [--end_date=<end_date>] [--today]
 
 Options:
   --year=<year>               Year to download from
@@ -16,6 +16,7 @@ Options:
                               1m(7 days), 2m(60 days), 5m(60 days), 15m(60 days), 30m(60 days), 60m(730 days), 90m(730 days)
   --start_date=<start_date>   date to start, meant to be used with --interval
   --end_date=<end_date>       date to end, meant to be used with --interval
+  --today                     Download todays info, use with --interval
 """
 
 import logging
@@ -75,6 +76,16 @@ def interval_download(symbol, interval, start_date=None, end_date=None):
     write_to_csv(data, filename)
 
 
+def today_download(symbol, interval):
+    """ Method to download a single days info """
+    date = datetime.today().strftime('%Y-%m-%d')
+    data = yf.download(symbol, period='1d', interval=interval)
+    filename = f'{symbol}_{date}_{interval}.csv'
+
+    # Write the file out
+    write_to_csv(data, filename)
+
+
 def write_to_csv(data, filename):
     data.to_csv(f'data/{filename}')
 
@@ -89,12 +100,15 @@ if __name__ == '__main__':
     interval = args['--interval']
     start_date = args['--start_date']
     end_date = args['--end_date']
+    today = args['--today']
 
     if year is not None:
         start_year = year
         end_year = year
 
-    if interval is not None and (start_date is None or end_date is None):
+    if today:
+        today_download(symbol, interval)
+    elif interval is not None and (start_date is None or end_date is None):
         interval_download(symbol, interval)
     elif start_date is not None and end_date is not None:
         interval_download(symbol, interval, start_date, end_date)

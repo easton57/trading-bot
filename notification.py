@@ -23,6 +23,7 @@ def send_training_notification(recipient, ticker):
                f"Training has completed for {ticker}!"
                f"\n\n"
                f"Thanks,"
+               f"\n"
                f"Market Saver RL")
 
     # Plug text into email
@@ -38,7 +39,7 @@ def send_training_notification(recipient, ticker):
         )
 
 
-def send_error_notification(recipient, ticker):
+def send_error_notification(recipient, ticker, error):
     """ Dang it something is wrong email """
     message = MIMEMultipart("alternative")
     message["Subject"] = "Training Failed"
@@ -47,9 +48,12 @@ def send_error_notification(recipient, ticker):
 
     msg_txt = (f"Hello!"
                f"\n\n"
-               f"Training failed for {ticker}! Review logs and try again"
+               f"Training failed for {ticker} with error {error}! "
+               f"\n\n"
+               f"Review logs and try again."
                f"\n\n"
                f"Thanks,"
+               f"\n"
                f"Market Saver RL")
 
     # Plug text into email

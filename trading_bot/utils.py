@@ -20,20 +20,31 @@ def show_train_result(result, val_position, initial_offset):
     """ Displays training results
     """
     if val_position == initial_offset or val_position == 0.0:
-        logging.info('Episode {}/{} - Train Position: {}  Val Position: USELESS  Train Loss: {:.4f}'
-                     .format(result[0], result[1], format_position(result[2]), result[3]))
+        txt = 'Episode {}/{} - Train Position: {}  Val Position: USELESS  Train Loss: {:.4f}'.format(result[0], result[1], format_position(result[2]), result[3])
+        logging.info(txt)
     else:
-        logging.info('Episode {}/{} - Train Position: {}  Val Position: {}  Train Loss: {:.4f})'
-                     .format(result[0], result[1], format_position(result[2]), format_position(val_position), result[3],))
+        txt = 'Episode {}/{} - Train Position: {}  Val Position: {}  Train Loss: {:.4f})'.format(result[0], result[1], format_position(result[2]), format_position(val_position), result[3],)
+        logging.info(txt)
+
+    write_to_file('train', txt)
 
 
 def show_eval_result(model_name, profit, initial_offset):
     """ Displays eval results
     """
     if profit == initial_offset or profit == 0.0:
-        logging.info('{}: USELESS\n'.format(model_name))
+        txt = '{}: USELESS\n'.format(model_name)
+        logging.info(txt)
     else:
-        logging.info('{}: {}\n'.format(model_name, format_position(profit)))
+        txt = '{}: {}\n'.format(model_name, format_position(profit))
+        logging.info(txt)
+
+    write_to_file('eval', txt)
+
+
+def write_to_file(step, text):
+    with open('results.txt', 'a') as file:
+        file.write(f"{step}: {text}\n")
 
 
 def get_stock_data(stock_file):
