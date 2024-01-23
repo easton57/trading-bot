@@ -42,11 +42,12 @@ def year_download(symbol, start_year, end_year):
     write_to_csv(data, filename)
 
 
-def interval_download(symbol, interval, start_date=None, end_date=None):
+def interval_download(symbol, interval, start_date=None, end_date=None, full=False):
     """ To download a specific interval. This will download the max amount that it can for the specified interval """
-    if start_date is None:
+    if end_date is None:
         end_date = datetime.today().strftime('%Y-%m-%d')
 
+    if full:
         if interval == '1m':
             # Has to be the last 7 days
             day = 7
@@ -67,7 +68,7 @@ def interval_download(symbol, interval, start_date=None, end_date=None):
     data = yf.download(symbol, start=start_date, end=end_date, interval=interval)
 
     # Create our filename
-    if start_date is None:
+    if full:
         filename = f'{symbol}_{day}day_{end_date}_{interval}.csv'
     else:
         filename = f'{symbol}_{start_date}-{end_date}_{interval}.csv'
@@ -109,7 +110,7 @@ if __name__ == '__main__':
     if today:
         today_download(symbol, interval)
     elif interval is not None and (start_date is None or end_date is None):
-        interval_download(symbol, interval)
+        interval_download(symbol, interval, full=True)
     elif start_date is not None and end_date is not None:
         interval_download(symbol, interval, start_date, end_date)
     else:
