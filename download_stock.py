@@ -5,7 +5,7 @@ Usage:
   download_stock.py <stock-symbol> [--year=<year>]
     [--start_year=<start_year>] [--end_year=<end_year>]
     [--interval=<interval>] [--start_date=<start_date>]
-    [--end_date=<end_date>]
+    [--end_date=<end_date>] [--today]
 
 Options:
   --year=<year>               Year to download from
