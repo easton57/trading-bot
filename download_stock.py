@@ -16,6 +16,7 @@ Options:
                               1m(7 days), 2m(60 days), 5m(60 days), 15m(60 days), 30m(60 days), 60m(730 days), 90m(730 days)
   --start_date=<start_date>   date to start, meant to be used with --interval
   --end_date=<end_date>       date to end, meant to be used with --interval
+  --today                     Download todays info, use with --interval
 """
 
 import logging
