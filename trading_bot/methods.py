@@ -13,6 +13,8 @@ from .ops import (
     get_state
 )
 
+# logging.basicConfig(filename='logs/')
+
 
 def train_model(agent, episode, data, ep_count=100, batch_size=32, window_size=10):
     total_profit = 0
@@ -38,7 +40,7 @@ def train_model(agent, episode, data, ep_count=100, batch_size=32, window_size=1
         elif action == 2 and len(agent.inventory) > 0:
             bought_price = agent.inventory.pop(0)
             delta = data[t] - bought_price
-            reward = delta #max(delta, 0)
+            reward = delta  # max(delta, 0)
             total_profit += delta
 
         # HOLD
@@ -54,7 +56,7 @@ def train_model(agent, episode, data, ep_count=100, batch_size=32, window_size=1
 
         state = next_state
 
-    if episode % 5 == 0:
+    if episode % 10 == 0:
         agent.save(episode)
 
     return episode, ep_count, total_profit, np.mean(np.array(avg_loss))
@@ -63,7 +65,6 @@ def train_model(agent, episode, data, ep_count=100, batch_size=32, window_size=1
 def evaluate_model(agent, data, window_size, debug):
     total_profit = 0
     data_length = len(data) - 1
-    action_txt = None
 
     history = []
     agent.inventory = []
@@ -83,9 +84,6 @@ def evaluate_model(agent, data, window_size, debug):
 
             history.append((data[t], "BUY"))
 
-            # For writing to file
-            action_txt = "Buy at: {}".format(format_currency(data[t]))
-
             if debug:
                 logging.debug("Buy at: {}".format(format_currency(data[t])))
         
@@ -93,24 +91,17 @@ def evaluate_model(agent, data, window_size, debug):
         elif action == 2 and len(agent.inventory) > 0:
             bought_price = agent.inventory.pop(0)
             delta = data[t] - bought_price
-            reward = delta #max(delta, 0)
+            reward = delta  # max(delta, 0)
             total_profit += delta
 
             history.append((data[t], "SELL"))
 
-            # For writing to file
-            action_txt = "Sell at: {} | Position: {}".format(format_currency(data[t]),
-                                                         format_position(data[t] - bought_price))
             if debug:
                 logging.debug("Sell at: {} | Position: {}".format(
                     format_currency(data[t]), format_position(data[t] - bought_price)))
         # HOLD
         else:
             history.append((data[t], "HOLD"))
-
-        # Write action to file
-        with open('results.txt', 'a') as file:
-            file.write(action_txt + '\n')
 
         done = (t == data_length - 1)
         agent.memory.append((state, action, reward, next_state, done))
