@@ -7,6 +7,7 @@ Usage:
 Options:
   --window-size=<window-size>   Size of the n-day window stock data representation used as the feature vector. [default: 10]
   --model-name=<model-name>     Name of the pretrained model to use (will eval all models in `models/` if unspecified).
+  --max-position=<max-position>     Maximum number of shares that the model can hold at a time (we don't all have unlimited money)
   --debug                       Specifies whether to use verbose logs during eval operation.
 """
 
@@ -26,7 +27,7 @@ from trading_bot.utils import (
 )
 
 
-def main(eval_stock, window_size, model_name, debug):
+def main(eval_stock, window_size, model_name, debug, max_position):
     """ Evaluates the stock trading bot.
     Please see https://arxiv.org/abs/1312.5602 for more details.
 
@@ -38,7 +39,7 @@ def main(eval_stock, window_size, model_name, debug):
     # Single Model Evaluation
     if model_name is not None:
         agent = Agent(window_size, pretrained=True, model_name=model_name)
-        profit, _ = evaluate_model(agent, data, window_size, debug)
+        profit, _ = evaluate_model(agent, data, window_size, debug, max_position)
         show_eval_result(model_name, profit, initial_offset)
         
     # Multiple Model Evaluation
@@ -46,7 +47,7 @@ def main(eval_stock, window_size, model_name, debug):
         for model in os.listdir("models"):
             if os.path.isfile(os.path.join("models", model)):
                 agent = Agent(window_size, pretrained=True, model_name=model)
-                profit = evaluate_model(agent, data, window_size, debug)
+                profit = evaluate_model(agent, data, window_size, debug, max_position)
                 show_eval_result(model, profit, initial_offset)
                 del agent
 
@@ -58,11 +59,12 @@ if __name__ == "__main__":
     window_size = int(args["--window-size"])
     model_name = args["--model-name"]
     debug = args["--debug"]
+    max_position = args["--max-position"]
 
     coloredlogs.install(level="DEBUG")
     switch_k_backend_device()
 
     try:
-        main(eval_stock, window_size, model_name, debug)
+        main(eval_stock, window_size, model_name, debug, max_position)
     except KeyboardInterrupt:
         print("Aborted")

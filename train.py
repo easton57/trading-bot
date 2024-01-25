@@ -5,7 +5,7 @@ Usage:
   train.py <train-stock> [--val-stock=<val-stock>] [--strategy=<strategy>]
     [--window-size=<window-size>] [--batch-size=<batch-size>]
     [--episode-count=<episode-count>] [--model-name=<model-name>]
-    [--recipient=<recipient>]
+    [--recipient=<recipient>] [--max-position=<max-position>]
     [--pretrained] [--debug]
 
 Options:
@@ -25,9 +25,11 @@ Options:
   --pretrained                      Specifies whether to continue training a previously
                                     trained model (reads `model-name`).
   --recipient=<recipient>           Recipient for email notifications on training
+  --max-position=<max-position>     Maximum number of shares that the model can hold at a time (we don't all have unlimited money)
   --debug                           Specifies whether to use verbose logs during eval operation.
 """
 
+import math
 import logging
 import coloredlogs
 import numpy as np
@@ -45,8 +47,11 @@ from trading_bot.utils import (
     switch_k_backend_device
 )
 
+logging.basicConfig(filename='logs/train.log', level=logging.DEBUG,
+                    format='[%(asctime)s] %(name)s %(levelname)s - %(message)s')
 
-def main(train_stock, val_stock, window_size, batch_size, ep_count,
+
+def main(train_stock, val_stock, window_size, batch_size, ep_count, max_position,
          strategy="t-dqn", model_name="model_debug", pretrained=False,
          debug=False):
     """ Trains the stock trading bot using Deep Q-Learning.
@@ -54,6 +59,8 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count,
 
     Args: [python train.py --help]
     """
+    logging.info(f"Training model {model_name} with {ep_count} episode(s) and a max position of {max_position} with {train_stock} as the training data and {val_stock} as validation.")
+
     agent = Agent(window_size, strategy=strategy, pretrained=pretrained, model_name=model_name)
     
     train_data = get_stock_data(train_stock)
@@ -62,16 +69,16 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count,
     initial_offset = val_data[1] - val_data[0]
 
     for episode in range(1, ep_count + 1):
-        train_result = train_model(agent, episode, train_data, ep_count=ep_count,
+        train_result = train_model(agent, episode, train_data, debug, ep_count=ep_count, max_position=max_position,
                                    batch_size=batch_size, window_size=window_size)
-        val_result, _ = evaluate_model(agent, val_data, window_size, debug)
+        val_result, _ = evaluate_model(agent, val_data, window_size, debug, max_position)
         show_train_result(train_result, val_result, initial_offset)
 
     # Send success email
     nf.send_training_notification(recipient, model_name)
 
 
-def single_data(stock_data, window_size, batch_size, ep_count,
+def single_data(stock_data, window_size, batch_size, ep_count, max_position,
          strategy="t-dqn", model_name="model_debug", pretrained=False,
          debug=False, recipient='null@null.com'):
     """ Trains the stock trading bot using Deep Q-Learning.
@@ -80,6 +87,8 @@ def single_data(stock_data, window_size, batch_size, ep_count,
 
     Args: [python train.py --help]
     """
+    logging.info(f"Training model {model_name} with {ep_count} episode(s) and a max position of {max_position} with {stock_data} as the training and validation data")
+
     agent = Agent(window_size, strategy=strategy, pretrained=pretrained, model_name=model_name)
 
     # Separate the data passed
@@ -94,9 +103,9 @@ def single_data(stock_data, window_size, batch_size, ep_count,
     initial_offset = val_data[1] - val_data[0]
 
     for episode in range(1, ep_count + 1):
-        train_result = train_model(agent, episode, train_data, ep_count=ep_count,
+        train_result = train_model(agent, episode, train_data, debug, ep_count=ep_count, max_position=max_position,
                                    batch_size=batch_size, window_size=window_size)
-        val_result, _ = evaluate_model(agent, val_data, window_size, debug)
+        val_result, _ = evaluate_model(agent, val_data, window_size, debug, max_position)
         show_train_result(train_result, val_result, initial_offset)
 
     # Send success email
@@ -116,6 +125,10 @@ if __name__ == "__main__":
     pretrained = args["--pretrained"]
     debug = args["--debug"]
     recipient = args["--recipient"]
+    try:
+        max_position = int(args["--max-position"])
+    except TypeError:
+        max_position = math.inf
 
     coloredlogs.install(level="DEBUG")
     switch_k_backend_device()
@@ -123,11 +136,11 @@ if __name__ == "__main__":
     try:
         if val_stock is None:
             single_data(train_stock, window_size, batch_size,
-                        ep_count, strategy=strategy, model_name=model_name,
+                        ep_count, max_position, strategy=strategy, model_name=model_name,
                         pretrained=pretrained, debug=debug)
         else:
             main(train_stock, val_stock, window_size, batch_size,
-                 ep_count, strategy=strategy, model_name=model_name,
+                 ep_count, max_position, strategy=strategy, model_name=model_name,
                  pretrained=pretrained, debug=debug)
     except KeyboardInterrupt:
         print("Aborted!")
