@@ -71,8 +71,8 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count, max_position
     initial_offset = val_data[1] - val_data[0]
 
     for episode in range(1, ep_count + 1):
-        train_result = train_model(agent, episode, train_data, debug, save_thresh=save_thresh, ep_count=ep_count, max_position=max_position,
-                                   batch_size=batch_size, window_size=window_size)
+        train_result = train_model(agent, episode, train_data, debug, save_thresh=save_thresh, ep_count=ep_count,
+                                   max_position=max_position, batch_size=batch_size, window_size=window_size)
         val_result, _ = evaluate_model(agent, val_data, window_size, debug, max_position)
         show_train_result(train_result, val_result, initial_offset)
 
@@ -105,8 +105,8 @@ def single_data(stock_data, window_size, batch_size, ep_count, max_position, sav
     initial_offset = val_data[1] - val_data[0]
 
     for episode in range(1, ep_count + 1):
-        train_result = train_model(agent, episode, train_data, debug, save_thresh=save_thresh, ep_count=ep_count, max_position=max_position,
-                                   batch_size=batch_size, window_size=window_size)
+        train_result = train_model(agent, episode, train_data, debug, save_thresh=save_thresh, ep_count=ep_count,
+                                   max_position=max_position, batch_size=batch_size, window_size=window_size)
         val_result, _ = evaluate_model(agent, val_data, window_size, debug, max_position)
         show_train_result(train_result, val_result, initial_offset)
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     pretrained = args["--pretrained"]
     debug = args["--debug"]
     recipient = args["--recipient"]
-    save_thresh = args["--save-thresh"]
+    save_thresh = int(args["--save-thresh"])
 
     try:
         max_position = int(args["--max-position"])
@@ -139,12 +139,12 @@ if __name__ == "__main__":
 
     try:
         if val_stock is None:
-            single_data(train_stock, window_size, batch_size, save_thresh,
-                        ep_count, max_position, strategy=strategy, model_name=model_name,
+            single_data(train_stock, window_size, batch_size, ep_count, max_position, save_thresh=save_thresh,
+                        strategy=strategy, model_name=model_name,
                         pretrained=pretrained, debug=debug)
         else:
-            main(train_stock, val_stock, window_size, batch_size, save_thresh,
-                 ep_count, max_position, strategy=strategy, model_name=model_name,
+            main(train_stock, val_stock, window_size, batch_size, ep_count, max_position, save_thresh=save_thresh,
+                 strategy=strategy, model_name=model_name,
                  pretrained=pretrained, debug=debug)
     except KeyboardInterrupt:
         print("Aborted!")
