@@ -1,9 +1,7 @@
 import os
-import math
 import logging
 
 import pandas as pd
-import numpy as np
 
 import keras.backend as K
 
