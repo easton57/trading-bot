@@ -64,6 +64,11 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count, max_position
     """
     logging.info(f"Training model {model_name} with {ep_count} episode(s) and a max position of {max_position} with {train_stock} as the training data and {val_stock} as validation.")
 
+    if (save_thresh is None or save_thresh < ep_count) and model_name != "model_debug":
+        save_thresh = ep_count
+        logging.info("Model name isn't the default and save threshold not set or smaller than episode count. "
+                     "Setting save threshold to episode count.")
+
     agent = Agent(window_size, strategy=strategy, pretrained=pretrained, model_name=model_name)
     
     train_data = get_stock_data(train_stock)
@@ -91,6 +96,11 @@ def single_data(stock_data, window_size, batch_size, ep_count, max_position, sav
     Args: [python train.py --help]
     """
     logging.info(f"Training model {model_name} with {ep_count} episode(s) and a max position of {max_position} with {stock_data} as the training and validation data")
+
+    if (save_thresh is None or save_thresh < ep_count) and model_name != "model_debug":
+        save_thresh = ep_count
+        logging.info("Model name isn't the default and save threshold not set or smaller than episode count. "
+                     "Setting save threshold to episode count.")
 
     agent = Agent(window_size, strategy=strategy, pretrained=pretrained, model_name=model_name)
 
