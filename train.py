@@ -38,6 +38,7 @@ import numpy as np
 import notification as nf
 
 from docopt import docopt
+from datetime import datetime
 
 from trading_bot.agent import Agent
 from trading_bot.methods import train_model, evaluate_model
@@ -49,7 +50,7 @@ from trading_bot.utils import (
     switch_k_backend_device
 )
 
-logging.basicConfig(filename='logs/train.log', level=logging.DEBUG,
+logging.basicConfig(filename=f"logs/train_{datetime.today().strftime('%Y-%m-%d')}.log", level=logging.DEBUG,
                     format='[%(asctime)s] %(name)s %(levelname)s - %(message)s')
 
 

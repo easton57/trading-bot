@@ -4,6 +4,7 @@ import logging
 import numpy as np
 
 from tqdm import tqdm
+from datetime import datetime
 
 from .utils import (
     format_currency,
@@ -15,7 +16,7 @@ from .ops import (
 
 
 def train_model(agent, episode, data, debug, save_thresh=10, ep_count=100, batch_size=32, window_size=10, max_position=math.inf):
-    logging.basicConfig(filename='logs/train.log', level=logging.DEBUG, force=True,
+    logging.basicConfig(filename=f"logs/train_{datetime.today().strftime('%Y-%m-%d')}.log", level=logging.DEBUG, force=True,
                         format='[%(asctime)s] %(name)s %(levelname)s - %(message)s')
     logging.info('* * * * * * * * * * * * * * * * * * * * * * *')
     logging.info(f'* * * Starting Training on Episode {episode} * * *')
@@ -76,7 +77,7 @@ def train_model(agent, episode, data, debug, save_thresh=10, ep_count=100, batch
 
 
 def evaluate_model(agent, data, window_size, debug, max_position=math.inf):
-    logging.basicConfig(filename='logs/eval.log', level=logging.DEBUG, force=True,
+    logging.basicConfig(filename=f"logs/eval_{datetime.today().strftime('%Y-%m-%d')}.log", level=logging.DEBUG, force=True,
                         format='[%(asctime)s] %(name)s %(levelname)s - %(message)s')
     logging.info('* * * * * * * * * * * * * * * * * * * * * * *')
     logging.info('* * * * * *  Starting Evaluation  * * * * * *')
