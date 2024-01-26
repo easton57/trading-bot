@@ -3,19 +3,19 @@ Script for downloading stock data
 
 Usage:
   download_stock.py <stock-symbol> [--year=<year>]
-    [--start_year=<start_year>] [--end_year=<end_year>]
-    [--interval=<interval>] [--start_date=<start_date>]
-    [--end_date=<end_date>] [--today]
+    [--start-year=<start_year>] [--end-year=<end_year>]
+    [--interval=<interval>] [--start-date=<start_date>]
+    [--end-date=<end_date>] [--today]
 
 Options:
   --year=<year>               Year to download from
-  --start_year=<start_year>   Year to start
-  --end_year=<end_year>       Year to end
+  --start-year=<start_year>   Year to start
+  --end-year=<end_year>       Year to end
   --interval=<interval>       Interval to download. Will download all data available for the specified interval
                               supported intervals: interval(how much data you get up to today)
                               1m(7 days), 2m(60 days), 5m(60 days), 15m(60 days), 30m(60 days), 60m(730 days), 90m(730 days)
-  --start_date=<start_date>   date to start, meant to be used with --interval
-  --end_date=<end_date>       date to end, meant to be used with --interval
+  --start-date=<start_date>   date to start, meant to be used with --interval
+  --end-date=<end_date>       date to end, meant to be used with --interval
   --today                     Download todays info, use with --interval
 """
 
@@ -96,11 +96,11 @@ if __name__ == '__main__':
 
     symbol = args['<stock-symbol>']
     year = args['--year']
-    start_year = args['--start_year']
-    end_year = args['--end_year']
+    start_year = args['--start-year']
+    end_year = args['--end-year']
     interval = args['--interval']
-    start_date = args['--start_date']
-    end_date = args['--end_date']
+    start_date = args['--start-date']
+    end_date = args['--end-date']
     today = args['--today']
 
     if year is not None:
