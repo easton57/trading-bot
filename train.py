@@ -6,6 +6,7 @@ Usage:
     [--window-size=<window-size>] [--batch-size=<batch-size>]
     [--episode-count=<episode-count>] [--model-name=<model-name>]
     [--recipient=<recipient>] [--max-position=<max-position>]
+    [--save-thresh=<save-thresh>]
     [--pretrained] [--debug]
 
 Options:
@@ -26,6 +27,7 @@ Options:
                                     trained model (reads `model-name`).
   --recipient=<recipient>           Recipient for email notifications on training
   --max-position=<max-position>     Maximum number of shares that the model can hold at a time (we don't all have unlimited money)
+  --save-thresh=<save-thresh>       Number of episodes to save after. [default: 10]
   --debug                           Specifies whether to use verbose logs during eval operation.
 """
 
@@ -51,7 +53,7 @@ logging.basicConfig(filename='logs/train.log', level=logging.DEBUG,
                     format='[%(asctime)s] %(name)s %(levelname)s - %(message)s')
 
 
-def main(train_stock, val_stock, window_size, batch_size, ep_count, max_position,
+def main(train_stock, val_stock, window_size, batch_size, ep_count, max_position, save_thresh,
          strategy="t-dqn", model_name="model_debug", pretrained=False,
          debug=False):
     """ Trains the stock trading bot using Deep Q-Learning.
@@ -69,7 +71,7 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count, max_position
     initial_offset = val_data[1] - val_data[0]
 
     for episode in range(1, ep_count + 1):
-        train_result = train_model(agent, episode, train_data, debug, ep_count=ep_count, max_position=max_position,
+        train_result = train_model(agent, episode, train_data, debug, save_thresh=save_thresh, ep_count=ep_count, max_position=max_position,
                                    batch_size=batch_size, window_size=window_size)
         val_result, _ = evaluate_model(agent, val_data, window_size, debug, max_position)
         show_train_result(train_result, val_result, initial_offset)
@@ -78,7 +80,7 @@ def main(train_stock, val_stock, window_size, batch_size, ep_count, max_position
     nf.send_training_notification(recipient, model_name)
 
 
-def single_data(stock_data, window_size, batch_size, ep_count, max_position,
+def single_data(stock_data, window_size, batch_size, ep_count, max_position, save_thresh,
          strategy="t-dqn", model_name="model_debug", pretrained=False,
          debug=False, recipient='null@null.com'):
     """ Trains the stock trading bot using Deep Q-Learning.
@@ -103,7 +105,7 @@ def single_data(stock_data, window_size, batch_size, ep_count, max_position,
     initial_offset = val_data[1] - val_data[0]
 
     for episode in range(1, ep_count + 1):
-        train_result = train_model(agent, episode, train_data, debug, ep_count=ep_count, max_position=max_position,
+        train_result = train_model(agent, episode, train_data, debug, save_thresh=save_thresh, ep_count=ep_count, max_position=max_position,
                                    batch_size=batch_size, window_size=window_size)
         val_result, _ = evaluate_model(agent, val_data, window_size, debug, max_position)
         show_train_result(train_result, val_result, initial_offset)
@@ -125,6 +127,8 @@ if __name__ == "__main__":
     pretrained = args["--pretrained"]
     debug = args["--debug"]
     recipient = args["--recipient"]
+    save_thresh = args["--save-thresh"]
+
     try:
         max_position = int(args["--max-position"])
     except TypeError:
@@ -135,11 +139,11 @@ if __name__ == "__main__":
 
     try:
         if val_stock is None:
-            single_data(train_stock, window_size, batch_size,
+            single_data(train_stock, window_size, batch_size, save_thresh,
                         ep_count, max_position, strategy=strategy, model_name=model_name,
                         pretrained=pretrained, debug=debug)
         else:
-            main(train_stock, val_stock, window_size, batch_size,
+            main(train_stock, val_stock, window_size, batch_size, save_thresh,
                  ep_count, max_position, strategy=strategy, model_name=model_name,
                  pretrained=pretrained, debug=debug)
     except KeyboardInterrupt:

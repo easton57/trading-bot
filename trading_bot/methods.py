@@ -14,7 +14,7 @@ from .ops import (
 )
 
 
-def train_model(agent, episode, data, debug, ep_count=100, batch_size=32, window_size=10, max_position=math.inf):
+def train_model(agent, episode, data, debug, save_thresh=10, ep_count=100, batch_size=32, window_size=10, max_position=math.inf):
     logging.basicConfig(filename='logs/train.log', level=logging.DEBUG, force=True,
                         format='[%(asctime)s] %(name)s %(levelname)s - %(message)s')
     logging.info('* * * * * * * * * * * * * * * * * * * * * * *')
@@ -69,7 +69,7 @@ def train_model(agent, episode, data, debug, ep_count=100, batch_size=32, window
 
         state = next_state
 
-    if episode % 10 == 0:
+    if episode % save_thresh == 0:
         agent.save(episode)
 
     return episode, ep_count, total_profit, np.mean(np.array(avg_loss))
