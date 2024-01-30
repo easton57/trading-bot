@@ -2,7 +2,7 @@
 Script for evaluating Stock Trading Bot.
 
 Usage:
-  eval.py <eval-stock> [--window-size=<window-size>] [--model-name=<model-name>] [--debug]
+  eval.py <eval-stock> [--window-size=<window-size>] [--max-position=<max-position>] [--model-name=<model-name>] [--debug]
 
 Options:
   --window-size=<window-size>   Size of the n-day window stock data representation used as the feature vector. [default: 10]
@@ -12,6 +12,7 @@ Options:
 """
 
 import os
+import math
 import coloredlogs
 
 from docopt import docopt
@@ -59,7 +60,10 @@ if __name__ == "__main__":
     window_size = int(args["--window-size"])
     model_name = args["--model-name"]
     debug = args["--debug"]
-    max_position = args["--max-position"]
+    try:
+        max_position = int(args["--max-position"])
+    except TypeError:
+        max_position = math.inf
 
     coloredlogs.install(level="DEBUG")
     switch_k_backend_device()
